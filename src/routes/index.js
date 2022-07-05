@@ -4,7 +4,9 @@ const TokenController = require('../controllers/index');
 
 router.get('/', TokenController.listarTokens);
 
-router.post('/', TokenController.cadastrarTokens);
+router.post('/cadastro', TokenController.cadastrarTokens);
+
+router.post('/login', TokenController.fazerLogin);
 
 router.get('/:nome', TokenController.verificarToken);
 

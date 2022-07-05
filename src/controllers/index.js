@@ -1,15 +1,21 @@
 const TokensModel = require('../models/models.js');
 const jwt = require('jsonwebtoken');
-const moment = require('moment');
+const { Op } = require('sequelize');
+const crypto = require('crypto');
 
 exports.cadastrarTokens = async (req, res) => {
 
+    // passar como parametro nome e password
+
     const body = req.body;
 
-    const token = jwt.sign({ userID: body.nome }, body.password, { expiresIn: 300 })
+    var hash = crypto.createHash('sha256').update(body.senha).digest('base64');
+
+    const token = jwt.sign({ userID: body.nome }, hash, { expiresIn: 300 })
 
     const inserirToken = await TokensModel.create({
         nome: body.nome,
+        senha: hash,
         token: token
     })
 
@@ -58,29 +64,44 @@ exports.verificarToken = async (req, res) => {
     if(nomeExiste.length > 0){
 
         nomeExiste.map((response) => {
-            console.log(response.token);
-            var decoded = jwt.decode(response.token);
-            console.log(decoded);
+            // Primeiro ele verifica o token pra ver se ele é verdadeiro
+            // Depois ele vai fazer a verificação pra saber se o token expirou
 
-            let dateIat = new Date(decoded.iat * 1000);
-            dateIat = dateIat.getHours() + ':' + dateIat.getMinutes() + ':' + dateIat.getSeconds();
+            jwt.verify(response.token, response.senha, (error, decoded) => {
+                if(error){
+                    console.log('Deu erro aqui dentro');
+                    console.log(error);
+                }else{
+                    console.log('Aqui vai aparecer se ele for válido', decoded);
+                    let dateIat = new Date(decoded.iat * 1000);
+                    dateIat = dateIat.getHours() + ':' + dateIat.getMinutes() + ':' + dateIat.getSeconds();
+        
+                    console.log("Data emissão:", dateIat);
+                    
+                    let dateExp = new Date(decoded.exp * 1000);
+                    dateExp = dateExp.getHours() + ':' + dateExp.getMinutes() + ':' + dateExp.getSeconds();
+                    console.log("Data expiração:", dateExp);
+        
+                    let dataEmissao = Date.parse(dateIat);
+                    let dataExpiracao = Date.parse(dateExp);
+                }
+            })
 
-            console.log("Data emissão:", dateIat);
-            
-            let dateExp = new Date(decoded.exp * 1000);
-            dateExp = dateExp.getHours() + ':' + dateExp.getMinutes() + ':' + dateExp.getSeconds();
-            console.log("Data expiração:", dateExp);
 
-            let data1 = Date.parse(dateIat);
-            let data2 = Date.parse(dateExp);
 
-            if(data1 > data2){
-                console.log('first')
-            }
+            // jwt.verify(response.token, '1234', (error, decoded) => {
+            //     if(error){
+            //         console.log('Deu erro aqui dentro');
+            //         console.log(error);
+            //     }else{
+            //         console.log('Aqui vai aparecer se ele for válido', decoded);
+            //         return decoded;
+            //     }
+            // })
             
             res.json({
                 status: 'error',
-                message: 'Nome já se encontra na base de dados',
+                message: 'Nome se encontra na base de dados',
                 nome: response.nome,
                 token: response.token
             });
@@ -113,6 +134,43 @@ exports.deletarToken = async (req, res) => {
         res.json({
             status: 'erro',
             message: error
+        })
+    }
+
+
+
+}
+
+exports.fazerLogin = async (req, res) => {
+
+    const body = req.body;
+
+    var hash = crypto.createHash('sha256').update(body.senha).digest('base64');
+
+    const nomeLogin = await TokensModel.findAll({
+        where: {
+            [Op.and]: [
+                { nome: body.nome },
+                { senha: hash }
+            ]
+        }
+    });
+
+    if ( nomeLogin.length > 0 ) {
+
+        nomeLogin.map(() => {
+            res.json({
+                status: 'ok',
+                message: 'Login realizado com sucesso'
+            })
+
+            
+
+        })
+    }else {
+        res.json({
+            status: 'error',
+            message: 'Ocorreu um erro ao realizar o login'
         })
     }
 

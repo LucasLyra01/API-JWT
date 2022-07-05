@@ -7,6 +7,10 @@ const Tokens = sequelize.define('tokens', {
         type: Sequelize.STRING,
         allowNull: false
     },
+    senha: {
+        type: Sequelize.STRING,
+        allowNull: false
+    },
     token: {
         type: Sequelize.STRING,
         allowNull: false
