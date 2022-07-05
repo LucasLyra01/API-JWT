@@ -17,6 +17,14 @@ app.use(express.urlencoded({
 
 app.use(express.json());
 
+// modo de usar
+// https://developer.mozilla.org/pt-BR/docs/Web/HTTP/CORS#exemplos_de_cen%C3%A1rios_com_controle_de_acesso
+// Access-Control-Allow-Origin: http://foo.example
+// Access-Control-Allow-Origin: http://foo.example
+// Access-Control-Allow-Origin: http://foo.example
+// Access-Control-Allow-Origin: http://foo.example
+// Access-Control-Allow-Origin: http://foo.example
+
 app.use('/tokens', routerTokens);
 
 // app.post('/login', (req, res) => {
