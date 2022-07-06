@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 
 const app = express();
 
-const port = 3000;
+const port = 5000;
 const hostname = "localhost";
 
 const routerTokens = require('./routes/index');
@@ -16,6 +16,29 @@ app.use(express.urlencoded({
 }));
 
 app.use(express.json());
+
+// app.use(cors());
+
+// app.use((req, res, next) => {
+//   // res.header("Access-Control-Allow-Origin", "*")
+//   res.header("Access-Control-Allow-Origin: https://www.google.com/");
+//   res.setHeader(
+//     "Access-Control-Allow-Headers",
+//     "Origin, X-Requested, Content-Type, Accept Authorization"
+//   )
+//   if (req.method === "GET") {
+//     res.setHeader("Access-Control-Allow-Origin", "*")
+//     res.setHeader("Access-Control-Allow-Methods", "POST, PUT, PATCH, GET, DELETE")
+
+//     res.status(200);
+
+//     // return next();
+//   }
+//   // return res.status(201).json({})
+//   res.status(201);
+//   next();
+
+// });
 
 // modo de usar
 // https://developer.mozilla.org/pt-BR/docs/Web/HTTP/CORS#exemplos_de_cen%C3%A1rios_com_controle_de_acesso

@@ -1,10 +1,16 @@
 let router = require('express').Router();
+const cors = require('cors');
 
 const TokenController = require('../controllers/index');
 
-router.get('/', TokenController.listarTokens);
+var corsOptions = {
+    origin: 'http://localhost:8080',
+    optionsSuccessStatus: 200
+}
 
-router.post('/cadastro', TokenController.cadastrarTokens);
+router.get('/', cors(corsOptions), TokenController.listarTokens);
+
+router.post('/cadastro', cors(corsOptions), TokenController.cadastrarTokens);
 
 router.post('/login', TokenController.fazerLogin);
 
